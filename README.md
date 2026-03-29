@@ -19,32 +19,42 @@ Das System umfasst mehrere spezialisierte Module, die eine ganzheitliche Karrier
 
 ## 3. Technische Architektur
 
-Die Software ist als Cross-Platform-Applikation konzipiert, wobei eine strikte Trennung zwischen Präsentationsschicht und Geschäftslogik eingehalten wurde.
+Die Software ist als Cross-Platform-Applikation konzipiert, wobei eine strikte Trennung zwischen Präsentationsschicht, Geschäftslogik und Datenmodellierung eingehalten wurde.
 
 ### 3.1 Framework und Programmiersprache
 Die Anwendung wurde mit dem Flutter-Framework (Dart) realisiert. Dies ermöglicht eine performante Ausführung auf verschiedenen Betriebssystemen bei gleichzeitiger Wahrung einer konsistenten Codebasis.
 
-### 3.2 KI-Integration und Prompt-Engineering
-Die Intelligenz des Systems basiert auf der Integration der OpenAI API (GPT-4o-mini). Ein wesentlicher Bestandteil der technischen Umsetzung ist das Design spezialisierter System-Prompts, die sicherstellen, dass die KI als professioneller Karriereberater fungiert und strukturierte Datenformate (JSON) für die technische Weiterverarbeitung liefert.
+### 3.2 Architekturmuster: MVVM (Model-View-ViewModel)
+Die Softwarearchitektur folgt konsequent dem **MVVM-Schema**, um eine hohe Wartbarkeit und Testbarkeit zu gewährleisten:
 
-### 3.3 Zustandsverwaltung
-Für die Verwaltung des Anwendungszustands wird das Provider-Pattern eingesetzt. Dies gewährleistet eine reaktive Datenhaltung zwischen den verschiedenen Modulen (z.B. Synchronisation des Quiz-Fortschritts mit dem Dashboard).
+- **Model:** Repräsentiert die reinen Datenstrukturen der Anwendung. Hierzu gehören Entitäten wie `JobRecommendation`, `UserProfile` und `ChatMessage`. Diese Schicht ist unabhängig von der Benutzeroberfläche und enthält keine Geschäftslogik.
+- **View:** Umfasst alle UI-Komponenten (Screens und Widgets). Die View reagiert ausschließlich auf Zustandsänderungen des ViewModels und leitet Nutzerinteraktionen an dieses weiter.
+- **ViewModel (AppState):** Fungiert als Bindeglied zwischen Daten und Anzeige. Es kapselt die gesamte Geschäftslogik (z. B. die Verarbeitung der Quiz-Antworten oder die Kommunikation mit der KI-API) und hält den aktuellen Anwendungszustand vor.
+
+### 3.3 Zustandsverwaltung (State Management)
+Die Synchronisation zwischen dem ViewModel und der View wird über das **Provider-Paket** in Kombination mit dem **ChangeNotifier-Pattern** realisiert:
+
+- Der `AppState` (das zentrale ViewModel) erbt von der Klasse `ChangeNotifier`.
+- Bei jeder relevanten Datenänderung (z. B. Eintreffen einer KI-Antwort oder Markierung einer Favoritenstelle) wird die Methode `notifyListeners()` aufgerufen.
+- Die betroffenen UI-Komponenten (Consumer) werden automatisch über diese Änderung informiert und bauen sich effizient neu auf (Reactive UI).
+
+### 3.4 KI-Integration und Prompt-Engineering
+Die Intelligenz des Systems basiert auf der Integration der OpenAI API (GPT-4o-mini). Ein wesentlicher Bestandteil der technischen Umsetzung ist das Design spezialisierter System-Prompts, die sicherstellen, dass die KI als professioneller Karriereberater fungiert und strukturierte Datenformate (JSON) für die technische Weiterverarbeitung liefert.
 
 ## 4. Projektstruktur und Datei-Organisation
 
-Die Verzeichnisstruktur folgt den Best Practices der Softwareentwicklung und ist wie folgt gegliedert:
+Die Verzeichnisstruktur spiegelt die MVVM-Architektur wider und ist wie folgt gegliedert:
 
-- **lib/models/**: Definition der Datenmodelle, die eine standardisierte Repräsentation von Berufsfeldern und Nutzerdaten sicherstellen.
-- **lib/providers/**: Implementierung der Zustandsverwaltung (AppState) zur Steuerung des globalen Datenflusses.
-- **lib/screens/**: Beinhaltet die UI-Komponenten der Anwendung:
+- **lib/models/**: Entspricht der **Model-Schicht**. Definition der Datenmodelle, die eine standardisierte Repräsentation von Berufsfeldern und Nutzerdaten sicherstellen.
+- **lib/providers/**: Entspricht der **ViewModel-Schicht**. Beinhaltet die zentrale Logik der Zustandsverwaltung (`app_state.dart`).
+- **lib/screens/**: Entspricht der **View-Schicht**. Beinhaltet die UI-Module:
     - `chatbot_screen.dart`: Schnittstelle zur KI-Kommunikation.
     - `dashboard_screen.dart`: Zentrale Aggregation von Nutzerinformationen.
     - `quiz_screen.dart`: Logik zur Erhebung des Interessenprofils.
     - `result_screen.dart`: Visualisierung der KI-generierten Analyseergebnisse.
-    - `onboarding_screen.dart` & `login_screen.dart`: Module zur Nutzerführung und Authentifizierung.
-- **lib/services/**: Kapselung externer API-Aufrufe, insbesondere die Kommunikation mit den OpenAI-Endpunkten.
+- **lib/services/**: Kapselung der **Service-Schicht**. Enthält isolierte Logik für externe API-Aufrufe (OpenAIService), um die Testbarkeit zu erhöhen.
 - **lib/theme/**: Definition der visuellen Ästhetik (Farbsystem, Typografie), basierend auf den CI-Vorgaben der FHDW.
-- **main.dart**: Primärer Einstiegspunkt des Systems.
+- **main.dart**: Primärer Einstiegspunkt des Systems und Initialisierung des globalen Providers.
 
 ## 5. Systemanforderungen und Installation
 
