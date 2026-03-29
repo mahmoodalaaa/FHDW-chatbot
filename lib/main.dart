@@ -45,9 +45,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: AppColors.primaryBlue,
             foregroundColor: AppColors.textWhite,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                24,
-              ), // Adjusted towards design
+              borderRadius: BorderRadius.circular(24),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16),
             textStyle: const TextStyle(

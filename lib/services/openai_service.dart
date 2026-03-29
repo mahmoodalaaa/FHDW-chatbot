@@ -12,7 +12,7 @@ class OpenAIService {
     final apiKey = dotenv.env['OPENAI_API_KEY'];
 
     if (apiKey == null || apiKey.isEmpty || apiKey == 'your_api_key_here') {
-      return "⚠️ OpenAI API Key is missing or invalid. Please add your key to the .env file and restart the app.";
+      return "OpenAI API Key is missing or invalid. Please add your key to the .env file and restart the app.";
     }
 
     final headers = {
